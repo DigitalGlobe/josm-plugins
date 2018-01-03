@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import javax.swing.JOptionPane;
 
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.actions.CreateCircleAction;
 import org.openstreetmap.josm.command.AddCommand;
 import org.openstreetmap.josm.command.ChangeCommand;
 import org.openstreetmap.josm.command.Command;
@@ -70,7 +71,8 @@ class Building {
     }
 
     public boolean isRectDrawing() {
-        return drawingAngle != null && ToolSettings.getWidth() == 0 && ToolSettings.getLenStep() == 0;
+        return drawingAngle != null && ToolSettings.getWidth() == 0 && ToolSettings.getLenStep() == 0
+                && ToolSettings.Shape.RECTANGLE.equals(ToolSettings.getShape());
     }
 
     public Double getDrawingAngle() {
@@ -263,6 +265,78 @@ class Building {
         if (nodes.size() != 1)
             return null;
         return nodes.get(0);
+    }
+
+    public Way createCircle() {
+        if (len == 0)
+            return null;
+        final boolean[] created = new boolean[2];
+        final Node[] nodes = new Node[2];
+        for (int i = 0; i < 2; i++) {
+
+            Node n = findNode(en[i]);
+            if (n == null) {
+                nodes[i] = new Node(eastNorth2latlon(en[i]));
+                created[i] = true;
+            } else {
+                nodes[i] = n;
+                created[i] = false;
+            }
+            if (nodes[i].getCoor().isOutSideWorld()) {
+                JOptionPane.showMessageDialog(Main.parent,
+                        tr("Cannot place building outside of the world."));
+                return null;
+            }
+        }
+        Way w = new Way();
+        w.addNode(nodes[0]);
+        w.addNode(nodes[1]);
+
+
+        DataSet ds = MainApplication.getLayerManager().getEditDataSet();
+        Collection<Command> cmds = new LinkedList<>();
+        for (int i = 0; i < 2; i++) {
+            if (created[i]) {
+                ds.addPrimitive(nodes[i]);
+                ds.addSelected(nodes[i]);
+            }
+            // cmds.add(new AddCommand(ds, nodes[i]));
+        }
+        cmds.add(new AddCommand(ds, w));
+        // ds.addPrimitive(w);
+
+        if (ToolSettings.PROP_USE_ADDR_NODE.get()) {
+            Node addrNode = getAddressNode();
+            if (addrNode != null) {
+                for (Entry<String, String> entry : addrNode.getKeys().entrySet()) {
+                    w.put(entry.getKey(), entry.getValue());
+                }
+                for (OsmPrimitive p : addrNode.getReferrers()) {
+                    Relation r = (Relation) p;
+                    Relation rnew = new Relation(r);
+                    for (int i = 0; i < r.getMembersCount(); i++) {
+                        RelationMember member = r.getMember(i);
+                        if (addrNode.equals(member.getMember())) {
+                            rnew.removeMember(i);
+                            rnew.addMember(i, new RelationMember(member.getRole(), w));
+                        }
+                    }
+                    cmds.add(new ChangeCommand(r, rnew));
+                }
+                cmds.add(new DeleteCommand(addrNode));
+            }
+        }
+
+        Command c = new SequenceCommand(tr("Create building"), cmds);
+        CreateCircleAction action = new CreateCircleAction();
+        action.setEnabled(true);
+        action.actionPerformed(null);
+        ds.clearSelection();
+        // ds.removePrimitive(w);
+        w = ds.getWays().iterator().next();
+        Main.main.undoRedo.add(c); // this may not undo changes to ds
+
+        return w;
     }
 
     public Way create() {

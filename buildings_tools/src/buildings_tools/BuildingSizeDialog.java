@@ -8,9 +8,11 @@ import java.awt.event.ActionListener;
 import java.text.NumberFormat;
 import java.text.ParseException;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFormattedTextField;
+import javax.swing.JRadioButton;
 
 import org.openstreetmap.josm.tools.GBC;
 
@@ -21,9 +23,22 @@ public class BuildingSizeDialog extends MyDialog {
     private final JCheckBox caddr = new JCheckBox(tr("Use Address dialog"));
     private final JCheckBox cAutoSelect = new JCheckBox(tr("Auto-select building"));
     private final JCheckBox cAddrNode = new JCheckBox(tr("Use address nodes under buildings"));
+    private final JRadioButton circleRadio = new JRadioButton("Circle");
+    private final JRadioButton rectangleRadio = new JRadioButton("Rectangle");
 
     public BuildingSizeDialog() {
-        super(tr("Set buildings size"));
+        super(tr("Set buildings size and shape"));
+
+        ButtonGroup shapeGroup = new ButtonGroup();
+        shapeGroup.add(circleRadio);
+        shapeGroup.add(rectangleRadio);
+        if (ToolSettings.Shape.CIRCLE.equals(ToolSettings.getShape())) {
+            circleRadio.setSelected(true);
+        } else if (ToolSettings.Shape.RECTANGLE.equals(ToolSettings.getShape())) {
+            rectangleRadio.setSelected(true);
+        }
+        panel.add(rectangleRadio, GBC.eol().fill(GBC.HORIZONTAL));
+        panel.add(circleRadio, GBC.eol().fill(GBC.HORIZONTAL));
 
         addLabelled(tr("Buildings width:"), twidth);
         addLabelled(tr("Length step:"), tlenstep);
@@ -74,6 +89,11 @@ public class BuildingSizeDialog extends MyDialog {
     }
 
     public final void saveSettings() {
+        if (circleRadio.isSelected()) {
+            ToolSettings.setShape(ToolSettings.Shape.CIRCLE);
+        } else if (rectangleRadio.isSelected()) {
+            ToolSettings.setShape(ToolSettings.Shape.RECTANGLE);
+        }
         ToolSettings.setSizes(width(), lenstep());
         ToolSettings.setAddrDialog(useAddr());
         ToolSettings.setAutoSelect(cAutoSelect.isSelected());

@@ -17,6 +17,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map.Entry;
@@ -216,15 +217,27 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
 
     private Mode modeDrawing() {
         EastNorth p = getEastNorth();
-        if (isRectDrawing()) {
-            building.setPlaceRect(p);
-            return shift ? Mode.DrawingAngFix : Mode.None;
-        } else {
-            building.setPlace(p, ToolSettings.getWidth(), ToolSettings.getLenStep(), shift);
-            MainApplication.getMap().statusLine.setDist(building.getLength());
-            this.nextMode = ToolSettings.getWidth() == 0 ? Mode.DrawingWidth : Mode.None;
-            return this.nextMode;
-        }
+        // if (ToolSettings.Shape.RECTANGLE.equals(ToolSettings.getShape())) {
+            if (isRectDrawing()) {
+                building.setPlaceRect(p);
+                return shift ? Mode.DrawingAngFix : Mode.None;
+            } else {
+                building.setPlace(p, ToolSettings.getWidth(), ToolSettings.getLenStep(), shift);
+                MainApplication.getMap().statusLine.setDist(building.getLength());
+                this.nextMode = ToolSettings.getWidth() == 0 ? Mode.DrawingWidth : Mode.None;
+                return this.nextMode;
+            }
+        // } else if (ToolSettings.Shape.CIRCLE.equals(ToolSettings.getShape()))
+        // {
+        // // Node n1 = new Node();
+        // // Node n2 = new Node();
+        // //
+        // // Way w = new Way(); // Way is Clockwize
+        // // w.setNodes(Arrays.asList(new Node[] { n1, n2 }));
+        // // getLayerManager().getEditDataSet().addPrimitive(w);
+        // }
+
+        // return Mode.None;
     }
 
     private Mode modeDrawingWidth() {
@@ -279,13 +292,27 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
         drawStartPos = mousePos;
 
         Node n = MainApplication.getMap().mapView.getNearestNode(mousePos, OsmPrimitive::isUsable);
-        if (n == null) {
-            building.setBase(latlon2eastNorth(MainApplication.getMap().mapView.getLatLon(mousePos.x, mousePos.y)));
+
+        if (ToolSettings.Shape.RECTANGLE.equals(ToolSettings.getShape())) {
+            if (n == null) {
+                building.setBase(latlon2eastNorth(MainApplication.getMap().mapView.getLatLon(mousePos.x, mousePos.y)));
+            } else {
+                building.setBase(n);
+            }
+            mode = Mode.Drawing;
+            updateStatusLine();
         } else {
-            building.setBase(n);
+            building.setBase(latlon2eastNorth(MainApplication.getMap().mapView.getLatLon(mousePos.x, mousePos.y)));
+            mode = Mode.Drawing;
+            updateStatusLine();
+
+            // Node n1 = new Node();
+            // Node n2 = new Node();
+            //
+            // Way w = new Way(); // Way is Clockwize
+            // w.setNodes(Arrays.asList(new Node[] { n1, n2 }));
+            // getLayerManager().getEditDataSet().addPrimitive(w);
         }
-        mode = Mode.Drawing;
-        updateStatusLine();
     }
 
     private void drawingAdvance(MouseEvent e) {
@@ -300,7 +327,12 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
 
     private void drawingFinish() {
         if (building.getLength() != 0) {
-            Way w = building.create();
+            Way w;
+            if (ToolSettings.Shape.RECTANGLE.equals(ToolSettings.getShape())) {
+                w = building.create();
+            } else {
+                w = building.createCircle();
+            }
             if (w != null) {
                 if (!alt || ToolSettings.isUsingAddr())
                     for (Entry<String, String> kv : ToolSettings.getTags().entrySet()) {
@@ -421,7 +453,6 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
                     break;
                 }
             }
-
             building.addAngleSnap(nodes.toArray(new Node[0]));
             for (Way w : ways) {
                 building.addAngleSnap(w);
