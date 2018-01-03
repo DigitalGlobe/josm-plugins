@@ -8,6 +8,7 @@ import static org.openstreetmap.josm.tools.I18n.tr;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.GeneralPath;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -300,10 +301,19 @@ class Building {
                 ds.addPrimitive(nodes[i]);
                 ds.addSelected(nodes[i]);
             }
-            // cmds.add(new AddCommand(ds, nodes[i]));
         }
-        cmds.add(new AddCommand(ds, w));
-        // ds.addPrimitive(w);
+
+        CreateCircleAction action = new CreateCircleAction();
+        action.setEnabled(true);
+        action.actionPerformed(null);
+
+        for (int i = 0; i < 2; i++) {
+            ds.removePrimitive(ds.getSelectedNodes().iterator().next());
+        }
+
+        int lastWayIndex = ds.getWays().size() - 1;
+        List<Object> ways = Arrays.asList(ds.getWays().toArray());
+        w = (Way) ways.get(lastWayIndex);
 
         if (ToolSettings.PROP_USE_ADDR_NODE.get()) {
             Node addrNode = getAddressNode();
@@ -325,16 +335,10 @@ class Building {
                 }
                 cmds.add(new DeleteCommand(addrNode));
             }
-        }
+            Command c = new SequenceCommand(tr("Create building"), cmds);
 
-        Command c = new SequenceCommand(tr("Create building"), cmds);
-        CreateCircleAction action = new CreateCircleAction();
-        action.setEnabled(true);
-        action.actionPerformed(null);
-        ds.clearSelection();
-        // ds.removePrimitive(w);
-        w = ds.getWays().iterator().next();
-        Main.main.undoRedo.add(c); // this may not undo changes to ds
+            Main.main.undoRedo.add(c);
+        }
 
         return w;
     }
