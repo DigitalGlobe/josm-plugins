@@ -34,6 +34,7 @@ public final class ToolSettings {
     private static boolean autoSelect;
 
     public static Shape getShape() {
+        loadShape();
         return shape;
     }
 
@@ -88,6 +89,19 @@ public final class ToolSettings {
             }
         } catch (NoSuchElementException e) {
             Logging.warn(e);
+        }
+    }
+
+    public static void saveShape(String shape) {
+        Main.pref.put("buildings_tool.shape", shape);
+    }
+
+    private static void loadShape() {
+        String shape = Main.pref.get("buildings_tool.shape");
+        if ("CIRCLE".equals(shape)) {
+            setShape(Shape.CIRCLE);
+        } else if ("RECTANGLE".equals(shape)) {
+            setShape(Shape.RECTANGLE);
         }
     }
 

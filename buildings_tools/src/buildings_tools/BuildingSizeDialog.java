@@ -91,8 +91,10 @@ public class BuildingSizeDialog extends MyDialog {
     public final void saveSettings() {
         if (circleRadio.isSelected()) {
             ToolSettings.setShape(ToolSettings.Shape.CIRCLE);
+            ToolSettings.saveShape("CIRCLE");
         } else if (rectangleRadio.isSelected()) {
             ToolSettings.setShape(ToolSettings.Shape.RECTANGLE);
+            ToolSettings.saveShape("RECTANGLE");
         }
         ToolSettings.setSizes(width(), lenstep());
         ToolSettings.setAddrDialog(useAddr());
