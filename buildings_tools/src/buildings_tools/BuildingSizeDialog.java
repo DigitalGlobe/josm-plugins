@@ -34,7 +34,7 @@ public class BuildingSizeDialog extends MyDialog {
         shapeGroup.add(rectangleRadio);
         if (ToolSettings.Shape.CIRCLE.equals(ToolSettings.getShape())) {
             circleRadio.setSelected(true);
-        } else if (ToolSettings.Shape.RECTANGLE.equals(ToolSettings.getShape())) {
+        } else {
             rectangleRadio.setSelected(true);
         }
         panel.add(rectangleRadio, GBC.eol().fill(GBC.HORIZONTAL));

@@ -212,32 +212,26 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
     }
 
     private boolean isRectDrawing() {
-        return building.isRectDrawing() && (!shift || ToolSettings.isBBMode());
+        return building.isRectDrawing() && (!shift || ToolSettings.isBBMode())
+                && ToolSettings.Shape.RECTANGLE.equals(ToolSettings.getShape());
     }
 
     private Mode modeDrawing() {
         EastNorth p = getEastNorth();
-        // if (ToolSettings.Shape.RECTANGLE.equals(ToolSettings.getShape())) {
-            if (isRectDrawing()) {
+        if (isRectDrawing()) {
                 building.setPlaceRect(p);
                 return shift ? Mode.DrawingAngFix : Mode.None;
-            } else {
-                building.setPlace(p, ToolSettings.getWidth(), ToolSettings.getLenStep(), shift);
-                MainApplication.getMap().statusLine.setDist(building.getLength());
-                this.nextMode = ToolSettings.getWidth() == 0 ? Mode.DrawingWidth : Mode.None;
-                return this.nextMode;
-            }
-        // } else if (ToolSettings.Shape.CIRCLE.equals(ToolSettings.getShape()))
-        // {
-        // // Node n1 = new Node();
-        // // Node n2 = new Node();
-        // //
-        // // Way w = new Way(); // Way is Clockwize
-        // // w.setNodes(Arrays.asList(new Node[] { n1, n2 }));
-        // // getLayerManager().getEditDataSet().addPrimitive(w);
-        // }
-
-        // return Mode.None;
+        } else if (ToolSettings.Shape.CIRCLE.equals(ToolSettings.getShape())) {
+            building.setPlace(p, ToolSettings.getWidth(), ToolSettings.getLenStep(), shift);
+            MainApplication.getMap().statusLine.setDist(building.getLength());
+            this.nextMode = Mode.None;
+            return this.nextMode;
+        } else {
+            building.setPlace(p, ToolSettings.getWidth(), ToolSettings.getLenStep(), shift);
+            MainApplication.getMap().statusLine.setDist(building.getLength());
+            this.nextMode = ToolSettings.getWidth() == 0 ? Mode.DrawingWidth : Mode.None;
+            return this.nextMode;
+        }
     }
 
     private Mode modeDrawingWidth() {
@@ -305,13 +299,6 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
             building.setBase(latlon2eastNorth(MainApplication.getMap().mapView.getLatLon(mousePos.x, mousePos.y)));
             mode = Mode.Drawing;
             updateStatusLine();
-
-            // Node n1 = new Node();
-            // Node n2 = new Node();
-            //
-            // Way w = new Way(); // Way is Clockwize
-            // w.setNodes(Arrays.asList(new Node[] { n1, n2 }));
-            // getLayerManager().getEditDataSet().addPrimitive(w);
         }
     }
 
