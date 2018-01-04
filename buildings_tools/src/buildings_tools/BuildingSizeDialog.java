@@ -40,7 +40,7 @@ public class BuildingSizeDialog extends MyDialog {
         panel.add(rectangleRadio, GBC.eol().fill(GBC.HORIZONTAL));
         panel.add(circleRadio, GBC.eol().fill(GBC.HORIZONTAL));
 
-        addLabelled(tr("Buildings width:"), twidth);
+        addLabelled(tr("Buildings width/diameter:"), twidth);
         addLabelled(tr("Length step:"), tlenstep);
         panel.add(caddr, GBC.eol().fill(GBC.HORIZONTAL));
         panel.add(cAutoSelect, GBC.eol().fill(GBC.HORIZONTAL));

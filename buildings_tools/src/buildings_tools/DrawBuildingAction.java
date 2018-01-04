@@ -222,7 +222,11 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
                 building.setPlaceRect(p);
                 return shift ? Mode.DrawingAngFix : Mode.None;
         } else if (ToolSettings.Shape.CIRCLE.equals(ToolSettings.getShape())) {
-            building.setPlace(p, ToolSettings.getWidth(), ToolSettings.getLenStep(), shift);
+            if (ToolSettings.getWidth() != 0) {
+                building.setPlaceCircle(p, ToolSettings.getWidth(), shift);
+            } else {
+                building.setPlace(p, ToolSettings.getWidth(), ToolSettings.getLenStep(), shift);
+            }
             MainApplication.getMap().statusLine.setDist(building.getLength());
             this.nextMode = Mode.None;
             return this.nextMode;

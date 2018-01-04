@@ -175,6 +175,17 @@ class Building {
         }
     }
 
+    public void setPlaceCircle(EastNorth p2, double width, boolean ignoreConstraints) {
+        if (en[0] == null)
+            throw new IllegalStateException("setPlace() called without the base point");
+        this.heading = en[0].heading(p2);
+        if (!ignoreConstraints)
+            this.heading = angleSnap.snapAngle(this.heading);
+        this.len = width;
+
+        updatePos();
+    }
+
     public void setPlaceRect(EastNorth p2) {
         if (en[0] == null)
             throw new IllegalStateException("SetPlaceRect() called without the base point");
