@@ -98,9 +98,9 @@ public final class ToolSettings {
 
     private static void loadShape() {
         String shape = Main.pref.get("buildings_tool.shape");
-        if ("CIRCLE".equals(shape)) {
+        if (ToolSettings.Shape.CIRCLE.name().equals(shape)) {
             setShape(Shape.CIRCLE);
-        } else if ("RECTANGLE".equals(shape)) {
+        } else if (ToolSettings.Shape.RECTANGLE.name().equals(shape)) {
             setShape(Shape.RECTANGLE);
         }
     }

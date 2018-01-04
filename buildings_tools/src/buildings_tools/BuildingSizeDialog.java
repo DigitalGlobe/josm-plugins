@@ -29,6 +29,9 @@ public class BuildingSizeDialog extends MyDialog {
     public BuildingSizeDialog() {
         super(tr("Set buildings size and shape"));
 
+        circleRadio.setToolTipText("Press 'O' when creating building");
+        rectangleRadio.setToolTipText("Press 'Q' when creating building");
+
         ButtonGroup shapeGroup = new ButtonGroup();
         shapeGroup.add(circleRadio);
         shapeGroup.add(rectangleRadio);
@@ -91,10 +94,10 @@ public class BuildingSizeDialog extends MyDialog {
     public final void saveSettings() {
         if (circleRadio.isSelected()) {
             ToolSettings.setShape(ToolSettings.Shape.CIRCLE);
-            ToolSettings.saveShape("CIRCLE");
+            ToolSettings.saveShape(ToolSettings.Shape.CIRCLE.name());
         } else if (rectangleRadio.isSelected()) {
             ToolSettings.setShape(ToolSettings.Shape.RECTANGLE);
-            ToolSettings.saveShape("RECTANGLE");
+            ToolSettings.saveShape(ToolSettings.Shape.RECTANGLE.name());
         }
         ToolSettings.setSizes(width(), lenstep());
         ToolSettings.setAddrDialog(useAddr());

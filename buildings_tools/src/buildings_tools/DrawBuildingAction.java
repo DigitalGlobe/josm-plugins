@@ -191,6 +191,12 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
 
             cancelDrawing();
         }
+        if (e.getKeyCode() == KeyEvent.VK_O) {
+            ToolSettings.saveShape(ToolSettings.Shape.CIRCLE.name());
+        }
+        if (e.getKeyCode() == KeyEvent.VK_Q) {
+            ToolSettings.saveShape(ToolSettings.Shape.RECTANGLE.name());
+        }
     }
 
     @Override
@@ -258,7 +264,6 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
             nextMode = Mode.None;
             return;
         }
-
         if (mode == Mode.Drawing) {
             nextMode = modeDrawing();
         } else if (mode == Mode.DrawingWidth) {
