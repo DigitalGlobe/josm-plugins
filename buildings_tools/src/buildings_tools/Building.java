@@ -318,9 +318,7 @@ class Building {
         action.setEnabled(true);
         action.actionPerformed(null);
 
-        for (int i = 0; i < 2; i++) {
-            ds.removePrimitive(ds.getSelectedNodes().iterator().next());
-        }
+        ds.clearSelection();
 
         int lastWayIndex = ds.getWays().size() - 1;
         List<Object> ways = Arrays.asList(ds.getWays().toArray());
