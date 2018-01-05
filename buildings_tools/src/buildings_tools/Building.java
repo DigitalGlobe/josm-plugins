@@ -342,10 +342,11 @@ class Building {
         w = (Way) ways.get(lastWayIndex);
 
         if (ToolSettings.PROP_USE_ADDR_NODE.get()) {
-            Collection<Command> addressCmds = new LinkedList<>();
 
             Node addrNode = getAddressNode();
             if (addrNode != null) {
+                Collection<Command> addressCmds = new LinkedList<>();
+
                 for (Entry<String, String> entry : addrNode.getKeys().entrySet()) {
                     w.put(entry.getKey(), entry.getValue());
                 }
@@ -362,9 +363,9 @@ class Building {
                     addressCmds.add(new ChangeCommand(r, rnew));
                 }
                 addressCmds.add(new DeleteCommand(addrNode));
+                Command c = new SequenceCommand(tr("Add address for building"), addressCmds);
+                Main.main.undoRedo.add(c);
             }
-            Command c = new SequenceCommand(tr("Add address for building"), addressCmds);
-            Main.main.undoRedo.add(c);
         }
 
         return w;
