@@ -133,10 +133,12 @@ class Building {
             return;
         final EastNorth p1 = en[0];
         en[1] = new EastNorth(p1.east() + Math.sin(heading) * len * meter, p1.north() + Math.cos(heading) * len * meter);
-        en[2] = new EastNorth(p1.east() + Math.sin(heading) * len * meter + Math.cos(heading) * width * meter,
-                p1.north() + Math.cos(heading) * len * meter - Math.sin(heading) * width * meter);
-        en[3] = new EastNorth(p1.east() + Math.cos(heading) * width * meter,
-                p1.north() - Math.sin(heading) * width * meter);
+        if (ToolSettings.Shape.RECTANGLE.equals(ToolSettings.getShape())) {
+            en[2] = new EastNorth(p1.east() + Math.sin(heading) * len * meter + Math.cos(heading) * width * meter,
+                    p1.north() + Math.cos(heading) * len * meter - Math.sin(heading) * width * meter);
+            en[3] = new EastNorth(p1.east() + Math.cos(heading) * width * meter,
+                    p1.north() - Math.sin(heading) * width * meter);
+        }
     }
 
     public void setLengthWidth(double length, double width) {
@@ -212,13 +214,14 @@ class Building {
         GeneralPath b = new GeneralPath();
         Point pp1 = mv.getPoint(eastNorth2latlon(en[0]));
         Point pp2 = mv.getPoint(eastNorth2latlon(en[1]));
-        Point pp3 = mv.getPoint(eastNorth2latlon(en[2]));
-        Point pp4 = mv.getPoint(eastNorth2latlon(en[3]));
-
         b.moveTo(pp1.x, pp1.y);
         b.lineTo(pp2.x, pp2.y);
-        b.lineTo(pp3.x, pp3.y);
-        b.lineTo(pp4.x, pp4.y);
+        if(ToolSettings.Shape.RECTANGLE.equals(ToolSettings.getShape())){
+            Point pp3 = mv.getPoint(eastNorth2latlon(en[2]));
+            Point pp4 = mv.getPoint(eastNorth2latlon(en[3]));
+            b.lineTo(pp3.x, pp3.y);
+            b.lineTo(pp4.x, pp4.y);
+        }
         b.lineTo(pp1.x, pp1.y);
         g.draw(b);
     }

@@ -322,7 +322,7 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
     }
 
     private void drawingFinish() {
-        if (building.getLength() != 0 || ToolSettings.Shape.CIRCLE.equals(ToolSettings.getShape())) {
+        if (building.getLength() != 0) {
             Way w;
             if (ToolSettings.Shape.RECTANGLE.equals(ToolSettings.getShape())) {
                 w = building.create();
