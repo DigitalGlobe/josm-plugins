@@ -250,8 +250,10 @@ class Building {
      */
     private Node getAddressNode() {
         BBox bbox = new BBox(eastNorth2latlon(en[0]), eastNorth2latlon(en[1]));
-        bbox.add(eastNorth2latlon(en[2]));
-        bbox.add(eastNorth2latlon(en[3]));
+        if (ToolSettings.Shape.RECTANGLE.equals(ToolSettings.getShape())) {
+            bbox.add(eastNorth2latlon(en[2]));
+            bbox.add(eastNorth2latlon(en[3]));
+        }
         List<Node> nodes = new LinkedList<>();
         nodesloop:
         for (Node n : MainApplication.getLayerManager().getEditDataSet().searchNodes(bbox)) {
