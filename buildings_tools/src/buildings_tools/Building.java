@@ -309,10 +309,22 @@ class Building {
 
 
         DataSet ds = MainApplication.getLayerManager().getEditDataSet();
-        Collection<Command> cmds = new LinkedList<>();
+        Collection<Command> addNodesCmd = new LinkedList<>();
+
         for (int i = 0; i < 2; i++) {
             if (created[i]) {
-                ds.addPrimitive(nodes[i]);
+                AddCommand addNode = new AddCommand(ds, nodes[i]);
+                addNodesCmd.add(addNode);
+            }
+        }
+
+        if (addNodesCmd.size() > 0) {
+            Command addNodes = new SequenceCommand(tr("Add nodes for building"), addNodesCmd);
+            Main.main.undoRedo.add(addNodes);
+        }
+
+        for (int i = 0; i < 2; i++) {
+            if (created[i]) {
                 ds.addSelected(nodes[i]);
             }
         }
@@ -328,6 +340,8 @@ class Building {
         w = (Way) ways.get(lastWayIndex);
 
         if (ToolSettings.PROP_USE_ADDR_NODE.get()) {
+            Collection<Command> addressCmds = new LinkedList<>();
+
             Node addrNode = getAddressNode();
             if (addrNode != null) {
                 for (Entry<String, String> entry : addrNode.getKeys().entrySet()) {
@@ -343,12 +357,11 @@ class Building {
                             rnew.addMember(i, new RelationMember(member.getRole(), w));
                         }
                     }
-                    cmds.add(new ChangeCommand(r, rnew));
+                    addressCmds.add(new ChangeCommand(r, rnew));
                 }
-                cmds.add(new DeleteCommand(addrNode));
+                addressCmds.add(new DeleteCommand(addrNode));
             }
-            Command c = new SequenceCommand(tr("Create building"), cmds);
-
+            Command c = new SequenceCommand(tr("Add address for building"), addressCmds);
             Main.main.undoRedo.add(c);
         }
 
