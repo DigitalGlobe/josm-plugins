@@ -285,6 +285,10 @@ class Building {
     }
 
     public Way createCircle() {
+        DataSet ds = MainApplication.getLayerManager().getEditDataSet();
+        Collection<OsmPrimitive> selectedPrimitives = ds.getAllSelected();
+        ds.clearSelection();
+
         if (len == 0)
             return null;
         final boolean[] created = new boolean[2];
@@ -310,7 +314,6 @@ class Building {
         w.addNode(nodes[1]);
 
 
-        DataSet ds = MainApplication.getLayerManager().getEditDataSet();
         Collection<Command> addNodesCmd = new LinkedList<>();
 
         for (int i = 0; i < 2; i++) {
@@ -336,6 +339,7 @@ class Building {
         action.actionPerformed(null);
 
         ds.clearSelection();
+        ds.addSelected(selectedPrimitives);
 
         int lastWayIndex = ds.getWays().size() - 1;
         List<Object> ways = Arrays.asList(ds.getWays().toArray());
