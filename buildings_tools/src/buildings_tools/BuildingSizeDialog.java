@@ -29,8 +29,8 @@ public class BuildingSizeDialog extends MyDialog {
     public BuildingSizeDialog() {
         super(tr("Set buildings size and shape"));
 
-        circleRadio.setToolTipText("Press SHIFT + 'C' when creating building");
-        rectangleRadio.setToolTipText("Press SHIFT + 'R' when creating building");
+        circleRadio.setToolTipText("Press SHIFT + 'C' when drawing building");
+        rectangleRadio.setToolTipText("Press SHIFT + 'R' when drawing building");
 
         ButtonGroup shapeGroup = new ButtonGroup();
         shapeGroup.add(circleRadio);
