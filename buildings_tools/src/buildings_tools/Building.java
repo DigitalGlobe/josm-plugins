@@ -8,8 +8,11 @@ import static org.openstreetmap.josm.tools.I18n.tr;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.GeneralPath;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -342,8 +345,18 @@ class Building {
         ds.addSelected(selectedPrimitives);
 
         int lastWayIndex = ds.getWays().size() - 1;
-        List<Object> ways = Arrays.asList(ds.getWays().toArray());
-        w = (Way) ways.get(lastWayIndex);
+
+        List<Way> ways = new ArrayList(ds.getWays());
+        Comparator<Way> comparator = new Comparator<Way>() {
+            @Override
+            public int compare(Way left, Way right) {
+                return Long.compare(right.getUniqueId(), left.getUniqueId());
+            }
+        };
+
+        Collections.sort(ways, comparator);
+
+        w = ways.get(lastWayIndex);
 
         if (ToolSettings.PROP_USE_ADDR_NODE.get()) {
 
