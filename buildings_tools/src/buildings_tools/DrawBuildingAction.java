@@ -326,7 +326,7 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
         if (building.getLength() != 0) {
             Way w;
             if (ToolSettings.Shape.RECTANGLE.equals(ToolSettings.getShape())) {
-                w = building.create();
+                w = building.createRectangle();
             } else {
                 w = building.createCircle();
             }

@@ -316,7 +316,6 @@ class Building {
         w.addNode(nodes[0]);
         w.addNode(nodes[1]);
 
-
         Collection<Command> addNodesCmd = new LinkedList<>();
 
         for (int i = 0; i < 2; i++) {
@@ -331,6 +330,7 @@ class Building {
             Main.main.undoRedo.add(addNodes);
         }
 
+        // Nodes must be selected for create circle action
         for (int i = 0; i < 2; i++) {
             if (created[i]) {
                 ds.addSelected(nodes[i]);
@@ -345,7 +345,6 @@ class Building {
         ds.addSelected(selectedPrimitives);
 
         int lastWayIndex = ds.getWays().size() - 1;
-
         List<Way> ways = new ArrayList(ds.getWays());
         Comparator<Way> comparator = new Comparator<Way>() {
             @Override
@@ -353,42 +352,15 @@ class Building {
                 return Long.compare(right.getUniqueId(), left.getUniqueId());
             }
         };
-
         Collections.sort(ways, comparator);
-
         w = ways.get(lastWayIndex);
 
-        if (ToolSettings.PROP_USE_ADDR_NODE.get()) {
-
-            Node addrNode = getAddressNode();
-            if (addrNode != null) {
-                Collection<Command> addressCmds = new LinkedList<>();
-
-                for (Entry<String, String> entry : addrNode.getKeys().entrySet()) {
-                    w.put(entry.getKey(), entry.getValue());
-                }
-                for (OsmPrimitive p : addrNode.getReferrers()) {
-                    Relation r = (Relation) p;
-                    Relation rnew = new Relation(r);
-                    for (int i = 0; i < r.getMembersCount(); i++) {
-                        RelationMember member = r.getMember(i);
-                        if (addrNode.equals(member.getMember())) {
-                            rnew.removeMember(i);
-                            rnew.addMember(i, new RelationMember(member.getRole(), w));
-                        }
-                    }
-                    addressCmds.add(new ChangeCommand(r, rnew));
-                }
-                addressCmds.add(new DeleteCommand(addrNode));
-                Command c = new SequenceCommand(tr("Add address for building"), addressCmds);
-                Main.main.undoRedo.add(c);
-            }
-        }
+        addAddress(w);
 
         return w;
     }
 
-    public Way create() {
+    public Way createRectangle() {
         if (len == 0)
             return null;
         final boolean[] created = new boolean[4];
@@ -429,9 +401,20 @@ class Building {
         }
         cmds.add(new AddCommand(ds, w));
 
+        addAddress(w);
+
+        Command c = new SequenceCommand(tr("Create building"), cmds);
+        Main.main.undoRedo.add(c);
+        return w;
+    }
+
+    private void addAddress(Way w) {
         if (ToolSettings.PROP_USE_ADDR_NODE.get()) {
+
             Node addrNode = getAddressNode();
             if (addrNode != null) {
+                Collection<Command> addressCmds = new LinkedList<>();
+
                 for (Entry<String, String> entry : addrNode.getKeys().entrySet()) {
                     w.put(entry.getKey(), entry.getValue());
                 }
@@ -445,13 +428,12 @@ class Building {
                             rnew.addMember(i, new RelationMember(member.getRole(), w));
                         }
                     }
-                    cmds.add(new ChangeCommand(r, rnew));
+                    addressCmds.add(new ChangeCommand(r, rnew));
                 }
-                cmds.add(new DeleteCommand(addrNode));
+                addressCmds.add(new DeleteCommand(addrNode));
+                Command c = new SequenceCommand(tr("Add address for building"), addressCmds);
+                Main.main.undoRedo.add(c);
             }
         }
-        Command c = new SequenceCommand(tr("Create building"), cmds);
-        Main.main.undoRedo.add(c);
-        return w;
     }
 }
