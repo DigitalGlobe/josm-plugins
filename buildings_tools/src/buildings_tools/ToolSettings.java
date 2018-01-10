@@ -102,6 +102,8 @@ public final class ToolSettings {
             setShape(Shape.CIRCLE);
         } else if (ToolSettings.Shape.RECTANGLE.name().equals(shape)) {
             setShape(Shape.RECTANGLE);
+        } else {
+            setShape(Shape.RECTANGLE);
         }
     }
 
