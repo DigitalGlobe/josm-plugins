@@ -344,16 +344,11 @@ class Building {
         ds.clearSelection();
         ds.addSelected(selectedPrimitives);
 
-        int lastWayIndex = ds.getWays().size() - 1;
+        // get the way with the smallest id with the assumption that it is
+        // newest way created by CreateCirclAction
         List<Way> ways = new ArrayList(ds.getWays());
-        Comparator<Way> comparator = new Comparator<Way>() {
-            @Override
-            public int compare(Way left, Way right) {
-                return Long.compare(right.getUniqueId(), left.getUniqueId());
-            }
-        };
-        Collections.sort(ways, comparator);
-        w = ways.get(lastWayIndex);
+        Collections.sort(ways);
+        w = ways.get(0);
 
         addAddress(w);
 

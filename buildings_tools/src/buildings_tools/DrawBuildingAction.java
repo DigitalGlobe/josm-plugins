@@ -193,10 +193,10 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
         }
 
         if (e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_C) {
-            ToolSettings.saveShape(ToolSettings.Shape.CIRCLE.name());
+            ToolSettings.saveShape(ToolSettings.Shape.CIRCLE);
         }
         if (e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_R) {
-            ToolSettings.saveShape(ToolSettings.Shape.RECTANGLE.name());
+            ToolSettings.saveShape(ToolSettings.Shape.RECTANGLE);
         }
     }
 
@@ -294,22 +294,18 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
     private void drawingStart(MouseEvent e) {
         mousePos = e.getPoint();
         drawStartPos = mousePos;
-
-        Node n = MainApplication.getMap().mapView.getNearestNode(mousePos, OsmPrimitive::isUsable);
-
-        if (ToolSettings.Shape.RECTANGLE.equals(ToolSettings.getShape())) {
+        if (ToolSettings.Shape.CIRCLE.equals(ToolSettings.getShape())) {
+            building.setBase(latlon2eastNorth(MainApplication.getMap().mapView.getLatLon(mousePos.x, mousePos.y)));
+        } else {
+            Node n = MainApplication.getMap().mapView.getNearestNode(mousePos, OsmPrimitive::isUsable);
             if (n == null) {
                 building.setBase(latlon2eastNorth(MainApplication.getMap().mapView.getLatLon(mousePos.x, mousePos.y)));
             } else {
                 building.setBase(n);
             }
-            mode = Mode.Drawing;
-            updateStatusLine();
-        } else {
-            building.setBase(latlon2eastNorth(MainApplication.getMap().mapView.getLatLon(mousePos.x, mousePos.y)));
-            mode = Mode.Drawing;
-            updateStatusLine();
         }
+        mode = Mode.Drawing;
+        updateStatusLine();
     }
 
     private void drawingAdvance(MouseEvent e) {
@@ -325,10 +321,10 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
     private void drawingFinish() {
         if (building.getLength() != 0) {
             Way w;
-            if (ToolSettings.Shape.RECTANGLE.equals(ToolSettings.getShape())) {
-                w = building.createRectangle();
-            } else {
+            if (ToolSettings.Shape.CIRCLE.equals(ToolSettings.getShape())) {
                 w = building.createCircle();
+            } else {
+                w = building.createRectangle();
             }
             if (w != null) {
                 if (!alt || ToolSettings.isUsingAddr())

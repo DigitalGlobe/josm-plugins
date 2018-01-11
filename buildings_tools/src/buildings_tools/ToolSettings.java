@@ -26,7 +26,7 @@ public final class ToolSettings {
             CIRCLE, RECTANGLE
     }
 
-    private static Shape shape = Shape.RECTANGLE;
+    private static Shape shape = loadShape();
     private static double width = 0;
     private static double lenstep = 0;
     private static boolean useAddr;
@@ -36,10 +36,6 @@ public final class ToolSettings {
     public static Shape getShape() {
         loadShape();
         return shape;
-    }
-
-    public static void setShape(Shape shape) {
-        ToolSettings.shape = shape;
     }
 
     public static void setAddrDialog(boolean _useAddr) {
@@ -92,18 +88,18 @@ public final class ToolSettings {
         }
     }
 
-    public static void saveShape(String shape) {
-        Main.pref.put("buildings_tool.shape", shape);
+    public static void saveShape(Shape shape) {
+        Main.pref.put("buildings_tool.shape", shape.name());
     }
 
-    private static void loadShape() {
+    private static Shape loadShape() {
         String shape = Main.pref.get("buildings_tool.shape");
         if (ToolSettings.Shape.CIRCLE.name().equals(shape)) {
-            setShape(Shape.CIRCLE);
-        } else if (ToolSettings.Shape.RECTANGLE.name().equals(shape)) {
-            setShape(Shape.RECTANGLE);
+            ToolSettings.shape = Shape.CIRCLE;
+            return Shape.CIRCLE;
         } else {
-            setShape(Shape.RECTANGLE);
+            ToolSettings.shape = Shape.RECTANGLE;
+            return (Shape.RECTANGLE);
         }
     }
 
