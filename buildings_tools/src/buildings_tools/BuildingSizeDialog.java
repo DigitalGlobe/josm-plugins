@@ -5,6 +5,7 @@ import static org.openstreetmap.josm.tools.I18n.tr;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.text.NumberFormat;
 import java.text.ParseException;
 
@@ -15,6 +16,7 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JRadioButton;
 
 import org.openstreetmap.josm.tools.GBC;
+import org.openstreetmap.josm.tools.Shortcut;
 
 @SuppressWarnings("serial")
 public class BuildingSizeDialog extends MyDialog {
@@ -23,14 +25,11 @@ public class BuildingSizeDialog extends MyDialog {
     private final JCheckBox caddr = new JCheckBox(tr("Use Address dialog"));
     private final JCheckBox cAutoSelect = new JCheckBox(tr("Auto-select building"));
     private final JCheckBox cAddrNode = new JCheckBox(tr("Use address nodes under buildings"));
-    private final JRadioButton circleRadio = new JRadioButton("Circle");
-    private final JRadioButton rectangleRadio = new JRadioButton("Rectangle");
+    private final JRadioButton circleRadio = new JRadioButton(tr("Circle"));
+    private final JRadioButton rectangleRadio = new JRadioButton(tr("Rectangle"));
 
     public BuildingSizeDialog() {
         super(tr("Set buildings size and shape"));
-
-        circleRadio.setToolTipText("Press SHIFT + 'C' when drawing building");
-        rectangleRadio.setToolTipText("Press SHIFT + 'R' when drawing building");
 
         ButtonGroup shapeGroup = new ButtonGroup();
         shapeGroup.add(circleRadio);

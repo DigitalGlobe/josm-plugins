@@ -192,12 +192,6 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
             cancelDrawing();
         }
 
-        if (e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_C) {
-            ToolSettings.saveShape(ToolSettings.Shape.CIRCLE);
-        }
-        if (e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_R) {
-            ToolSettings.saveShape(ToolSettings.Shape.RECTANGLE);
-        }
     }
 
     @Override
