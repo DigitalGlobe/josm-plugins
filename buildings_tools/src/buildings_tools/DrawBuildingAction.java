@@ -78,7 +78,11 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
 
     private static Cursor getCursor() {
         try {
-            return ImageProvider.getCursor("crosshair", "building");
+            if (ToolSettings.Shape.CIRCLE.equals(ToolSettings.getShape())) {
+                return ImageProvider.getCursor("crosshair", "silo");
+            }else{
+                return ImageProvider.getCursor("crosshair", "building");
+            }
         } catch (Exception e) {
             Logging.error(e);
         }
@@ -90,7 +94,7 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
      *
      * @param c One of the available cursors
      */
-    private void setCursor(final Cursor c) {
+    public void setCursor(final Cursor c) {
         if (currCursor.equals(c))
             return;
         try {
@@ -390,7 +394,7 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
             if (customCursor != null && (!ctrl || isRectDrawing()))
                 setCursor(customCursor);
             else
-                setCursor(cursorCrosshair);
+                setCursor(getCursor());
         }
 
     }
