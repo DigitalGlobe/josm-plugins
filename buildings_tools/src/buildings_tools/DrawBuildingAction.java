@@ -94,7 +94,7 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
      *
      * @param c One of the available cursors
      */
-    public void setCursor(final Cursor c) {
+    private void setCursor(final Cursor c) {
         if (currCursor.equals(c))
             return;
         try {
