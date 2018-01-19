@@ -16,7 +16,7 @@ public class BuildingRectangleAction extends JosmAction {
         super(tr("Set building shape to rectangle"), "mapmode/building", tr("Set buildings shape to rectangle"),
                 Shortcut.registerShortcut("buildings_tools:rectangle",
                         tr("Data: {0}", tr("Set buildings shape to rectangle")),
-                        KeyEvent.VK_R, Shortcut.CTRL_SHIFT),
+                        KeyEvent.VK_R, Shortcut.ALT),
                 true);
     }
 
