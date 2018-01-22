@@ -29,7 +29,10 @@ public class BuildingsToolsPlugin extends Plugin {
         super(info);
         JMenu dataMenu = MainApplication.getMenu().dataMenu;
         MainMenu.add(dataMenu, new BuildingSizeAction());
+        MainMenu.add(dataMenu, new BuildingCircleAction());
+        MainMenu.add(dataMenu, new BuildingRectangleAction());
         MainMenu.add(dataMenu, new MergeAddrPointsAction());
+
     }
 
     @Override

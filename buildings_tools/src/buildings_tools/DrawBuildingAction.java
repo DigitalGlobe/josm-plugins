@@ -17,6 +17,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map.Entry;
@@ -77,7 +78,11 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
 
     private static Cursor getCursor() {
         try {
-            return ImageProvider.getCursor("crosshair", "building");
+            if (ToolSettings.Shape.CIRCLE.equals(ToolSettings.getShape())) {
+                return ImageProvider.getCursor("crosshair", "silo");
+            }else{
+                return ImageProvider.getCursor("crosshair", "building");
+            }
         } catch (Exception e) {
             Logging.error(e);
         }
@@ -190,6 +195,7 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
 
             cancelDrawing();
         }
+
     }
 
     @Override
@@ -211,14 +217,24 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
     }
 
     private boolean isRectDrawing() {
-        return building.isRectDrawing() && (!shift || ToolSettings.isBBMode());
+        return building.isRectDrawing() && (!shift || ToolSettings.isBBMode())
+                && ToolSettings.Shape.RECTANGLE.equals(ToolSettings.getShape());
     }
 
     private Mode modeDrawing() {
         EastNorth p = getEastNorth();
         if (isRectDrawing()) {
-            building.setPlaceRect(p);
-            return shift ? Mode.DrawingAngFix : Mode.None;
+                building.setPlaceRect(p);
+                return shift ? Mode.DrawingAngFix : Mode.None;
+        } else if (ToolSettings.Shape.CIRCLE.equals(ToolSettings.getShape())) {
+            if (ToolSettings.getWidth() != 0) {
+                building.setPlaceCircle(p, ToolSettings.getWidth(), shift);
+            } else {
+                building.setPlace(p, ToolSettings.getWidth(), ToolSettings.getLenStep(), shift);
+            }
+            MainApplication.getMap().statusLine.setDist(building.getLength());
+            this.nextMode = Mode.None;
+            return this.nextMode;
         } else {
             building.setPlace(p, ToolSettings.getWidth(), ToolSettings.getLenStep(), shift);
             MainApplication.getMap().statusLine.setDist(building.getLength());
@@ -247,7 +263,6 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
             nextMode = Mode.None;
             return;
         }
-
         if (mode == Mode.Drawing) {
             nextMode = modeDrawing();
         } else if (mode == Mode.DrawingWidth) {
@@ -277,12 +292,15 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
     private void drawingStart(MouseEvent e) {
         mousePos = e.getPoint();
         drawStartPos = mousePos;
-
-        Node n = MainApplication.getMap().mapView.getNearestNode(mousePos, OsmPrimitive::isUsable);
-        if (n == null) {
+        if (ToolSettings.Shape.CIRCLE.equals(ToolSettings.getShape())) {
             building.setBase(latlon2eastNorth(MainApplication.getMap().mapView.getLatLon(mousePos.x, mousePos.y)));
         } else {
-            building.setBase(n);
+            Node n = MainApplication.getMap().mapView.getNearestNode(mousePos, OsmPrimitive::isUsable);
+            if (n == null) {
+                building.setBase(latlon2eastNorth(MainApplication.getMap().mapView.getLatLon(mousePos.x, mousePos.y)));
+            } else {
+                building.setBase(n);
+            }
         }
         mode = Mode.Drawing;
         updateStatusLine();
@@ -300,7 +318,12 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
 
     private void drawingFinish() {
         if (building.getLength() != 0) {
-            Way w = building.create();
+            Way w;
+            if (ToolSettings.Shape.CIRCLE.equals(ToolSettings.getShape())) {
+                w = building.createCircle();
+            } else {
+                w = building.createRectangle();
+            }
             if (w != null) {
                 if (!alt || ToolSettings.isUsingAddr())
                     for (Entry<String, String> kv : ToolSettings.getTags().entrySet()) {
@@ -371,7 +394,7 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
             if (customCursor != null && (!ctrl || isRectDrawing()))
                 setCursor(customCursor);
             else
-                setCursor(cursorCrosshair);
+                setCursor(getCursor());
         }
 
     }
@@ -421,7 +444,6 @@ public class DrawBuildingAction extends MapMode implements MapViewPaintable, Sel
                     break;
                 }
             }
-
             building.addAngleSnap(nodes.toArray(new Node[0]));
             for (Way w : ways) {
                 building.addAngleSnap(w);
