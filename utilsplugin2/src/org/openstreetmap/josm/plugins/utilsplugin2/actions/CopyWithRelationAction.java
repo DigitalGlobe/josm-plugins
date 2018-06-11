@@ -1,5 +1,5 @@
 // License: GPL. For details, see LICENSE file.
-// Author: David Earl
+// Author: Nick Tobin
 package org.openstreetmap.josm.plugins.utilsplugin2.actions;
 
 import static org.openstreetmap.josm.gui.help.HelpUtil.ht;
@@ -9,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 import javax.swing.JOptionPane;
 
@@ -26,48 +25,33 @@ import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.tools.Shortcut;
 
 /**
- * Copy OSM primitives and relation to clipboard in order to paste them, or their tags, somewhere else.
- * @since 404
+ * Copy OSM primitives and any parent relation and members to clipboard in order to paste them, or their tags, somewhere else.
  */
 public class CopyWithRelationAction extends JosmAction {
+
+	private static final String label = "Copy with relations";
     /**
-     * Constructs a new {@code CopyAction}.
+     * Constructs a new {@code CopyWithRelationAction}.
      */
     public CopyWithRelationAction() {
-        super(tr("Copy Relation"), "copy",
-                tr("Copy selected objects and relations to paste buffer."),
-                Shortcut.registerShortcut("system:copy:relation", tr("Edit: {0}", tr("Copy Relation")), KeyEvent.VK_C, Shortcut.ALT_SHIFT), true);
+        super(tr(label), "copy",
+                tr("Copy selected objects and their relations to paste buffer."),
+                Shortcut.registerShortcut("system:copy:relation", tr("Edit: {0}", tr(label)), KeyEvent.VK_C, Shortcut.ALT_SHIFT), true);
         putValue("help", ht("/Action/Copy"));
         // CUA shortcut for copy (https://en.wikipedia.org/wiki/IBM_Common_User_Access#Description)
         MainApplication.registerActionShortcut(this,
-                Shortcut.registerShortcut("system:copy:relation:cua", tr("Edit: {0}", tr("Copy Relation")), KeyEvent.VK_INSERT, Shortcut.CTRL_SHIFT));
+                Shortcut.registerShortcut("system:copy:relation:cua", tr("Edit: {0}", tr(label)), KeyEvent.VK_INSERT, Shortcut.CTRL_SHIFT));
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         DataSet set = getLayerManager().getEditDataSet();
-        Collection<Relation> relations = set.getRelations();
-        Collection<OsmPrimitive> addRelations = new ArrayList<>();
-
-        Collection<OsmPrimitive> selection = set == null ? Collections.<OsmPrimitive>emptySet() : set.getSelected();
-        if (selection.isEmpty()) {
-            showEmptySelectionWarning();
-            return;
-        }
-
-        selection.forEach(s -> {
-            relations.forEach(r ->{
-                r.getMembers().forEach(m -> {
-                    if (s.getUniqueId() == m.getUniqueId())
-                        addRelations.add(r);
-                });
-            });
-        });
-
-        addRelations.addAll(selection);
-        selection = addRelations;
-
-        copy(getLayerManager().getEditLayer(), selection);
+        Collection<OsmPrimitive> selection = set.getSelected();
+        Collection<Relation> relations = OsmPrimitive.getParentRelations(selection);
+        Collection<OsmPrimitive> copies = new ArrayList<>();
+        copies.addAll(selection);
+        copies.addAll(relations);
+        copy(getLayerManager().getEditLayer(), copies);
     }
 
     /**
