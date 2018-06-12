@@ -14,7 +14,7 @@ import org.openstreetmap.josm.plugins.PluginInformation;
 import org.openstreetmap.josm.plugins.utilsplugin2.actions.AddIntersectionsAction;
 import org.openstreetmap.josm.plugins.utilsplugin2.actions.AlignWayNodesAction;
 import org.openstreetmap.josm.plugins.utilsplugin2.actions.CopyTagsAction;
-import org.openstreetmap.josm.plugins.utilsplugin2.actions.CopyWithRelationAction;
+import org.openstreetmap.josm.plugins.utilsplugin2.actions.CopyWithRelationsAction;
 import org.openstreetmap.josm.plugins.utilsplugin2.actions.ExtractPointAction;
 import org.openstreetmap.josm.plugins.utilsplugin2.actions.PasteRelationsAction;
 import org.openstreetmap.josm.plugins.utilsplugin2.actions.SplitObjectAction;
@@ -118,7 +118,7 @@ public class UtilsPlugin2 extends Plugin {
         wiki = MainMenu.add(dataMenu, new OpenPageAction());
         latlon = MainMenu.add(toolsMenu, new LatLonAction());
         drawArc = MainMenu.add(toolsMenu, new CurveAction());
-        copyWithRelation = MainMenu.add(toolsMenu, new CopyWithRelationAction());
+        copyWithRelation = MainMenu.add(toolsMenu, new CopyWithRelationsAction());
 
         selectionMenu.addSeparator();
 

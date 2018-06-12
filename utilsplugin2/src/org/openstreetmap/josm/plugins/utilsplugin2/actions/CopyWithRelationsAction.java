@@ -17,7 +17,6 @@ import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Relation;
-import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.datatransfer.ClipboardUtils;
 import org.openstreetmap.josm.gui.datatransfer.PrimitiveTransferable;
 import org.openstreetmap.josm.gui.datatransfer.data.PrimitiveTransferData;
@@ -25,22 +24,20 @@ import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.tools.Shortcut;
 
 /**
- * Copy OSM primitives and any parent relation and members to clipboard in order to paste them, or their tags, somewhere else.
+ * Copy OSM primitives and any parent relations and members to clipboard in order to paste them, or their tags, somewhere else.
  */
-public class CopyWithRelationAction extends JosmAction {
+public class CopyWithRelationsAction extends JosmAction {
 
 	private static final String label = "Copy with relations";
     /**
-     * Constructs a new {@code CopyWithRelationAction}.
+     * Constructs a new {@code CopyWithRelationsAction}.
      */
-    public CopyWithRelationAction() {
+    public CopyWithRelationsAction() {
         super(tr(label), "copy",
                 tr("Copy selected objects and their relations to paste buffer."),
-                Shortcut.registerShortcut("system:copy:relation", tr("Edit: {0}", tr(label)), KeyEvent.VK_C, Shortcut.ALT_SHIFT), true);
-        putValue("help", ht("/Action/Copy"));
-        // CUA shortcut for copy (https://en.wikipedia.org/wiki/IBM_Common_User_Access#Description)
-        MainApplication.registerActionShortcut(this,
-                Shortcut.registerShortcut("system:copy:relation:cua", tr("Edit: {0}", tr(label)), KeyEvent.VK_INSERT, Shortcut.CTRL_SHIFT));
+                Shortcut.registerShortcut("system:copywithrelations", tr("Edit: {0}", tr(label)), KeyEvent.VK_K, Shortcut.CTRL),
+                true, CopyWithRelationsAction.class.getName(), true);
+        putValue("help", ht("/Action/CopyWithRelations"));
     }
 
     @Override
@@ -49,7 +46,7 @@ public class CopyWithRelationAction extends JosmAction {
         Collection<OsmPrimitive> selection = set.getSelected();
         Collection<Relation> relations = OsmPrimitive.getParentRelations(selection);
         Collection<OsmPrimitive> copies = new ArrayList<>();
-        copies.addAll(selection);
+        copies.addAll(selection); //include selection so something is copied if no relations
         copies.addAll(relations);
         copy(getLayerManager().getEditLayer(), copies);
     }
