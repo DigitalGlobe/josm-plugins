@@ -34,7 +34,7 @@ public class CopyWithRelationsAction extends JosmAction {
      */
     public CopyWithRelationsAction() {
         super(tr(label), "copy",
-                tr("Copy selected objects and their relations to paste buffer."),
+                tr("Select and copy parent relations of selected objects to paste buffer."),
                 Shortcut.registerShortcut("system:copywithrelations", tr("Edit: {0}", tr(label)), KeyEvent.VK_K, Shortcut.CTRL),
                 true, CopyWithRelationsAction.class.getName(), true);
         putValue("help", ht("/Action/CopyWithRelations"));
@@ -46,8 +46,12 @@ public class CopyWithRelationsAction extends JosmAction {
         Collection<OsmPrimitive> selection = set.getSelected();
         Collection<Relation> relations = OsmPrimitive.getParentRelations(selection);
         Collection<OsmPrimitive> copies = new ArrayList<>();
-        copies.addAll(selection); //include selection so something is copied if no relations
-        copies.addAll(relations);
+        if (relations.isEmpty()) {
+            copies.addAll(selection); //include selection so something is copied if no relations
+        } else {
+            copies.addAll(relations);
+            set.setSelected(relations);
+        }
         copy(getLayerManager().getEditLayer(), copies);
     }
 
