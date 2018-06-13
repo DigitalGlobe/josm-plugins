@@ -85,7 +85,7 @@ public class UtilsPlugin2 extends Plugin {
     JMenuItem selectHighway;
     JMenuItem selectAreaBoundary;
 
-    JMenuItem copyWithRelation;
+    JMenuItem copyWithRelations;
 
     JMenuItem selectURL;
 
@@ -118,7 +118,7 @@ public class UtilsPlugin2 extends Plugin {
         wiki = MainMenu.add(dataMenu, new OpenPageAction());
         latlon = MainMenu.add(toolsMenu, new LatLonAction());
         drawArc = MainMenu.add(toolsMenu, new CurveAction());
-        copyWithRelation = MainMenu.add(toolsMenu, new CopyWithRelationsAction());
+        copyWithRelations = MainMenu.add(toolsMenu, new CopyWithRelationsAction());
 
         selectionMenu.addSeparator();
 

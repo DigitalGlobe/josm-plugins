@@ -46,11 +46,10 @@ public class CopyWithRelationsAction extends JosmAction {
         Collection<OsmPrimitive> selection = set.getSelected();
         Collection<Relation> relations = OsmPrimitive.getParentRelations(selection);
         Collection<OsmPrimitive> copies = new ArrayList<>();
-        if (relations.isEmpty()) {
-            copies.addAll(selection); //include selection so something is copied if no relations
-        } else {
+        copies.addAll(selection); //include selection so something is copied if no relations
+        if (!relations.isEmpty()) {
             copies.addAll(relations);
-            set.setSelected(relations);
+            set.setSelected(copies);
         }
         copy(getLayerManager().getEditLayer(), copies);
     }
