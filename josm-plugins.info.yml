@@ -1,0 +1,14 @@
+name: josm-plugins
+description: FoundationGEOINT fork of josm plugins
+source: https://gitub.com/DigitalGlobe/josm-plugins
+team: FoundationGEOINT Apps Team
+data classification:
+  - company_proprietary
+language:
+  - java
+
+poc:
+  - name: Max Grossman
+    email: max.grossman@maxar.com
+  - name: Seth Putnam
+    email: seth.putnam@maxar.com
